@@ -2,6 +2,10 @@
  * These are small utility functions implementing algorithms
  * originally design by Gustavo Niemeyer. All functions that deal with latitude and
  * longitude assume the WGS84 coordinate system.
+ *
+ * @see {@link http://geohash.org/|Geohash} converter
+ * @see {@link https://en.wikipedia.org/wiki/Geohash|Algorithm} description
+ *
  * @module
  */
 
