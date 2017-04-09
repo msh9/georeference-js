@@ -13,6 +13,34 @@
  * @module
  */
 
+// I and O are removed for clarity
+const cleanedAlphabet = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z',
+];
+
 /**
  * Returns a GEOREF string based on the given WGS84 latitude, longitude, and precision
  * @param {number} latitude A WGS84 latitude
