@@ -85,55 +85,6 @@ const maxLongitudeBound = 180;
 const encodeBits = 5;
 
 /**
- * Point defines a WGS84 Coordinate System Point
- * @class
- */
-export class Point {
-  /**
-   *
-   * @param {number} latitude A WGS84 latitude
-   * @param {number} longitude A WGS84 longitude
-   */
-  constructor(latitude, longitude) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-  }
-
-  /**
-   *
-   * @returns {number} Latitude
-   */
-  getLatitude() {
-    return this.latitude;
-  }
-
-  /**
-   *
-   * @returns {number} Longitude
-   */
-  getLongitude() {
-    return this.longitude;
-  }
-
-  /**
-   * Calculates the 12 character geohash for this point
-   * @returns {string} The geohash for this point
-   */
-  toGeohash() {
-    return geohashFromLatLng(this.latitude, this.longitude);
-  }
-
-  /**
-   * Returns a point that represents the average WGS84 location of a geohash box
-   * @param {string} geohash The geohash used to calculated a latitude longitude pair
-   * @returns {Point} The mid-point of the latitude longitude box
-   */
-  static fromGeohash(geohash) {
-    return latLngFromGeohash(geohash);
-  }
-}
-
-/**
  * Returns a geohash string built from a WGS84 latitude longitude pair
  * @param {number} latitude A WGS84 latitude
  * @param {number} longitude A WGS84 longitude
@@ -198,7 +149,7 @@ export function geohashFromLatLng(latitude, longitude, precision = 12) {
 /**
  * Returns an approximate WGS84 point based on a given geohash
  * @param {string} geohash A geohash to decode into an approximate latitude and longitude
- * @returns {Point} The approximate point represented by the geohash
+ * @returns {object} The approximate point represented by the geohash
  */
 export function latLngFromGeohash(geohash) {
   if (geohash === null || geohash.length < 1) {
@@ -241,5 +192,8 @@ export function latLngFromGeohash(geohash) {
     }
   }
 
-  return new Point(midLatitude, midLongitude);
+  return {
+    latitude: midLatitude,
+    longitude: midLongitude,
+  };
 }
