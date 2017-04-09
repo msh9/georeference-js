@@ -1,0 +1,34 @@
+{
+  "extends": "airbnb-base",
+  "plugins": [
+      "import"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "no-use-before-define": [ 2, { "functions": false } ],
+/* Small comment here: I'm not sure that I agree with AirBnB's style guide on
+ * always avoiding ForOfStatements in favor of array iteration functions. The
+ * intent is likely to guide developers towards purely functional style
+ * functions, but the rule appears overly strong and perscriptive.
+ */
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ]
+  }
+}
