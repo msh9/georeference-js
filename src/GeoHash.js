@@ -1,5 +1,5 @@
 /**
- * A small geohash library. These are small utility functions implementing algorithms
+ * These are small utility functions implementing algorithms
  * originally design by Gustavo Niemeyer. All functions that deal with latitude and
  * longitude assume the WGS84 coordinate system.
  * @module

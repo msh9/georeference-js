@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { geohashFromLatLng, latLngFromGeohash } from './GeoHashLib';
+import { geohashFromLatLng, latLngFromGeohash } from './GeoHash';
 
 describe('Convert to geohash from latitude and longitude', () => {
   test('Rejects precision less than 1', () => {
