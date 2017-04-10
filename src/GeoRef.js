@@ -41,19 +41,37 @@ const cleanedAlphabet = [
   'Z',
 ];
 
+const startingLogitude = -180;
+const startingLatitude = -90;
+const twoLevelQuadrangleWidth = 15;
+
 /**
  * Returns a GEOREF string based on the given WGS84 latitude, longitude, and precision
  * @param {number} latitude A WGS84 latitude
  * @param {number} longitude A WGS84 longitude
+ * @param {boolean} spaced Indicates whether to return GEOREF strings with spaces between
+ * lat-lng characters--defaults to true
  * @param {number} precision The number of characters in the returned GEOREF string, allow
- * values are 2 <= precision <= 12
+ * values are 2 <= precision <= 12--defaults to true
  * @returns {string} A GEOREF string based on the given values
  */
-export function georefFromLatLng(latitude, longitude, precision = 12) {
+export function georefFromLatLng(latitude, longitude, spaced = true, precision = 12) {
   if (precision < 2 || precision > 12) {
     throw new Error(`GEOREF precision of ${precision} is out of bounds, 2 <= precision <= 12`);
   }
+  const characters = [];
+  for (let i = 0; i < precision; i += 1) {
+    const longSection = Math.floor(longitude / twoLevelQuadrangleWidth);
+    const latSection = Math.floor(latitude / twoLevelQuadrangleWidth);
+    if (longSection >= cleanedAlphabet.length || latSection >= cleanedAlphabet.length) {
+      throw new Error(`Lat: ${latSection} or Long: ${longSection} was out of range`);
+    }
+    characters.push(cleanedAlphabet[longSection]);
+    characters.push(cleanedAlphabet[latSection]);
+  }
 
+
+  return characters.join('');
 }
 
 /**

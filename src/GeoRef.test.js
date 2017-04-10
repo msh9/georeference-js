@@ -5,14 +5,33 @@ import { georefFromLatLng, latLngFromgeoref } from './GeoRef';
 describe('Convert to georef from latitude and longitude', () => {
   test('rejects precision less than 2', () => {
     expect(() => {
-      georefFromLatLng(1.0, 1.0, 1);
+      georefFromLatLng(1.0, 1.0, true, 1);
     }).toThrow();
   });
 
   test('rejects precision greater than 12', () => {
     expect(() => {
-      georefFromLatLng(1.0, 1.0, 13);
+      georefFromLatLng(1.0, 1.0, true, 13);
     }).toThrow();
+  });
+
+  test('reject out of range latitude', () => {
+    expect(() => {
+      georefFromLatLng(370, 120);
+    }).toThrow();
+  });
+
+  test('correctly converts the major, minimal, coordinates of the UK', () => {
+    expect(georefFromLatLng(51.064900, -1.797288, true, 2)).toBe('MK');
+  });
+
+  test('correctly converts the eight character precision GEOREF of the Salisbury Cathedral', () => {
+    expect(georefFromLatLng(51.064900, -1.797288, true, 8)).toBe('MK PG 12 04');
+  });
+
+  test('correctly converts the eight character precision GEOREF of the Salisbury Cathedral with' +
+    ' no spaces', () => {
+    expect(georefFromLatLng(51.064900, -1.797288, false, 8)).toBe('MKPG1204');
   });
 });
 
