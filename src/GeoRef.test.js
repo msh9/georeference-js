@@ -15,6 +15,12 @@ describe('Convert to georef from latitude and longitude', () => {
     }).toThrow();
   });
 
+  test('rejects precision that is not divisible by two', () => {
+    expect(() => {
+      georefFromLatLng(1.0, 1.0, true, 3);
+    }).toThrow();
+  });
+
   test('reject out of range latitude', () => {
     expect(() => {
       georefFromLatLng(370, 120);
