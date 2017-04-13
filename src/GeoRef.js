@@ -1,3 +1,5 @@
+import * as quads from './GeoRefPrecision';
+
 /**
  * Small utility functions that implement the World Geographic Reference System (GEOREF). GEOREF
  * was developed by United State Govt. for defence and strategic air operations. Conveniently, is
@@ -52,13 +54,18 @@ const degreeArcSecondsPerMinutes = 60;
  * @param {number} longitude A decimal longitude
  * @param {boolean} spaced Indicates whether to return GEOREF strings with spaces between
  * lat-lng characters--defaults to true
- * @param {number} precision The number of characters in the returned GEOREF string, allowed
- * values are 2 <= precision <= 12 and must be divisible by two--defaults to 12
+ * @param {QuadSize} precision The number of characters in the returned GEOREF string, allowed
+ * values are 2 <= precision <= 12 and must be one of values exported by GeoRefPrecision
  * @returns {string} A GEOREF string based on the given values
  */
-export function georefFromLatLng(latitude, longitude, spaced = true, precision = 12) {
-  if (precision < 2 || precision > 12 || precision % 2 !== 0) {
-    throw new Error(`GEOREF precision of ${precision} is out of bounds, 2 <= precision <= 12 or is not divisible by two`);
+export function georefFromLatLng(latitude, longitude, spaced = true, precision = 8) {
+  if (precision < 2 || precision > 12) {
+    throw new Error(`GEOREF precision of ${precision} is out of bounds`);
+  } else if (precision !== quads.FifteenDegreeQuad && precision !== quads.OneArcMinuteQuad &&
+    precision !== quads.OneDegreeQuad && precision !== quads.OneHundrethArcMinuteQuad &&
+    precision !== quads.OneTenthArcMinuteQuad) {
+    throw new Error(`GEOREF precision of ${precision} is not an acceptable value from` +
+      ' GeoRefPrecision');
   }
   const characters = [];
   let lastLeftLongitudeEdge = startingLongitude;
@@ -71,9 +78,9 @@ export function georefFromLatLng(latitude, longitude, spaced = true, precision =
   quadId = Math.floor((latitude - lastLowerLatitudeEdge) / firstQuadWidth);
   lastLowerLatitudeEdge += quadId * firstQuadWidth;
   boundCheckAndAdd(quadId, characters);
-  if (spaced && precision > 2) {
+  if (spaced && precision > quads.FifteenDegreeQuad) {
     characters.push(' ');
-  } else if (precision <= 2) {
+  } else if (precision <= quads.FifteenDegreeQuad) {
     return characters.join('');
   }
   // End 15 degree bounding box
@@ -82,9 +89,9 @@ export function georefFromLatLng(latitude, longitude, spaced = true, precision =
   boundCheckAndAdd(quadId, characters);
   quadId = Math.floor(latitude - lastLowerLatitudeEdge);
   boundCheckAndAdd(quadId, characters);
-  if (spaced && precision > 4) {
+  if (spaced && precision > quads.OneDegreeQuad) {
     characters.push(' ');
-  } else if (precision <= 4) {
+  } else if (precision <= quads.OneDegreeQuad) {
     return characters.join('');
   }
   // End one (1) degree bounding box
@@ -92,42 +99,39 @@ export function georefFromLatLng(latitude, longitude, spaced = true, precision =
      calculations in the following sections by *not* reusing certain results. I should probably
      run a test or two to verify if this is actually worthwhile.
    */
-  // Begin one ArcMinute bounding box
   const flooredLongitude = Math.abs(longitude - Math.floor(longitude));
   const flooredLatitude = Math.abs(latitude - Math.floor(latitude));
-  const longitudeArcMinutes = Math.round(flooredLongitude * degreeArcMinutes);
-  const latitudeArcMinutes = Math.round(flooredLatitude * degreeArcMinutes);
-  characters.push(`0${longitudeArcMinutes.toString()}`.slice(-2));
-  if (spaced && precision > 6) {
-    characters.push(' ');
-  } else if (precision <= 6) {
-    return characters.join('');
+  const longitudeArcMinutes = flooredLongitude * degreeArcMinutes;
+  const latitudeArcMinutes = flooredLatitude * degreeArcMinutes;
+  switch (precision) {
+    case quads.OneArcMinuteQuad: {
+      characters.push(`0${Math.round(longitudeArcMinutes).toString()}`.slice(-2));
+      if (spaced) {
+        characters.push(' ');
+      }
+      characters.push(`0${Math.round(latitudeArcMinutes).toString()}`.slice(-2));
+      break;
+    }
+    case quads.OneTenthArcMinuteQuad: {
+      // 60 ArcMinutes to a degree => up to 600 1/10 arcminutes, a three digit number
+      characters.push(`00${Math.round(longitudeArcMinutes * 10).toString()}`.slice(-3));
+      if (spaced) {
+        characters.push(' ');
+      }
+      characters.push(`00${Math.round(latitudeArcMinutes * 10).toString()}`.slice(-3));
+      break;
+    }
+    case quads.OneHundrethArcMinuteQuad: {
+      // 60 ArcMinutes to a degree => up to 6000 1/100 arcminutes, a four digit number
+      characters.push(`000${Math.round(longitudeArcMinutes * 100).toString()}`.slice(-4));
+      if (spaced) {
+        characters.push(' ');
+      }
+      characters.push(`000${Math.round(latitudeArcMinutes * 100).toString()}`.slice(-4));
+      break;
+    }
+    default: throw new Error(`GEOREF precision ${precision} didn't match predefined valued`);
   }
-  characters.push(`0${latitudeArcMinutes.toString()}`.slice(-2));
-  if (spaced && precision > 8) {
-    characters.push(' ');
-  } else if (precision <= 8) {
-    return characters.join('');
-  }
-  // End one ArcMinute bounding box
-  // Being one ArcSecond bounding box
-  const longitudeArcSeconds =
-    Math.round(flooredLongitude * degreeArcSeconds) % degreeArcSecondsPerMinutes;
-  const latitudeArcSeconds =
-    Math.round(flooredLatitude * degreeArcSeconds) % degreeArcSecondsPerMinutes;
-  characters.push(`0${longitudeArcSeconds.toString()}`.slice(-2));
-  if (spaced && precision > 10) {
-    characters.push(' ');
-  } else if (precision <= 10) {
-    return characters.join('');
-  }
-  characters.push(`0${latitudeArcSeconds.toString()}`.slice(-2));
-  if (spaced && precision > 12) {
-    characters.push(' ');
-  } else if (precision <= 12) {
-    return characters.join('');
-  }
-  // End one ArcSecond bounding box
 
   return characters.join('');
 }

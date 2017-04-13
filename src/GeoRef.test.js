@@ -1,5 +1,5 @@
 /* eslint-env jest */
-
+import * as quads from './GeoRefPrecision';
 import { georefFromLatLng, latLngFromgeoref } from './GeoRef';
 
 describe('Convert to georef from latitude and longitude', () => {
@@ -28,16 +28,20 @@ describe('Convert to georef from latitude and longitude', () => {
   });
 
   test('correctly converts the major, minimal, coordinates of the UK', () => {
-    expect(georefFromLatLng(51.064900, -1.797288, true, 2)).toBe('MK');
+    expect(georefFromLatLng(51.064900, -1.797288, true, quads.FifteenDegreeQuad)).toBe('MK');
   });
 
   test('correctly converts the eight character precision GEOREF of the Salisbury Cathedral', () => {
-    expect(georefFromLatLng(51.064900, -1.797288, true, 8)).toBe('MK PG 12 04');
+    expect(georefFromLatLng(51.064900, -1.797288, true, quads.OneArcMinuteQuad)).toBe('MK PG 12 04');
   });
 
   test('correctly converts the eight character precision GEOREF of the Salisbury Cathedral with' +
     ' no spaces', () => {
-    expect(georefFromLatLng(51.064900, -1.797288, false, 8)).toBe('MKPG1204');
+    expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneArcMinuteQuad)).toBe('MKPG1204');
+  });
+
+  test('correctly encodes the ten character position of the Naval Air Station Patuxent River', () => {
+    expect(georefFromLatLng(38.286108, -76.4291704, true, quads.OneTenthArcMinuteQuad)).toBe('GJPJ370172');
   });
 });
 
