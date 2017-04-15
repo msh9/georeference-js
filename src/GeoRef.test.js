@@ -42,11 +42,25 @@ describe('Convert to georef from latitude and longitude', () => {
 
   test('correctly converts the ten character precision GEOREF of the Salisbury Cathedral with' +
     ' no spaces', () => {
-    expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneTenthArcMinuteQuad)).toBe('MKPG1204');
+    expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneTenthArcMinuteQuad)).toBe('MKPG122039');
   });
 
-  test('correctly encodes the ten character position of the Naval Air Station Patuxent River', () => {
-    expect(georefFromLatLng(38.286108, -76.4291704, true, quads.OneTenthArcMinuteQuad)).toBe('GJPJ370172');
+  test('correctly converts the eight character precision GEOREF of the Naval Air Station Patuxent' +
+    ' River', () => {
+    expect(georefFromLatLng(38.286108, -76.4291704, false, quads.OneArcMinuteQuad)).toBe('GJPJ3717');
+  });
+
+  test('correctly converts the ten character position of the Naval Air Station Patuxent River', () => {
+    expect(georefFromLatLng(38.286108, -76.4291704, false, quads.OneTenthArcMinuteQuad)).toBe('GJPJ342172');
+  });
+
+  test('correctly converts the twelve character precision GEOREF of the Salisbury Cathedral with' +
+    ' no spaces', () => {
+    expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneHundrethArcMinuteQuad)).toBe('MKPG12160389');
+  });
+
+  test('correctly converts the twelve character position of the Naval Air Station Patuxent River', () => {
+    expect(georefFromLatLng(38.286108, -76.4291704, false, quads.OneHundrethArcMinuteQuad)).toBe('GJPJ34251717');
   });
 });
 
@@ -61,5 +75,27 @@ describe('Convert to latitude and longitude from georef', () => {
     expect(() => {
       latLngFromgeoref('0A');
     }).toThrow();
+  });
+
+  test('rejects invalid length of string', () => {
+    expect(() => {
+      latLngFromgeoref('AAAA01');
+    }).toThrow();
+  });
+
+  test('correctly averages position of MKPG1204', () => {
+    expect(latLngFromgeoref('MKPG1204')).toMatchObject({ latitude: 51.08, longitude: -1.79});
+  });
+
+  test('correctly averages position of GJPJ34251717', () => {
+    expect(latLngFromgeoref('GJPJ34251717')).toMatachObject({ latitude: 0, longitude: 0});
+  });
+
+  test('correctly averages position of AA', () => {
+    expect(latLngFromgeoref('AA')).toMatachObject({ latitude: -82.5, longitude: -172.5});
+  });
+
+  test('correctly averages position of ZZ', () => {
+    expect(latLngFromgeoref('ZZ')).toMatachObject({ latitude: 82.5, longitude: 172.5});
   });
 });
