@@ -40,6 +40,11 @@ describe('Convert to georef from latitude and longitude', () => {
     expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneArcMinuteQuad)).toBe('MKPG1204');
   });
 
+  test('correctly converts the ten character precision GEOREF of the Salisbury Cathedral with' +
+    ' no spaces', () => {
+    expect(georefFromLatLng(51.064900, -1.797288, false, quads.OneTenthArcMinuteQuad)).toBe('MKPG1204');
+  });
+
   test('correctly encodes the ten character position of the Naval Air Station Patuxent River', () => {
     expect(georefFromLatLng(38.286108, -76.4291704, true, quads.OneTenthArcMinuteQuad)).toBe('GJPJ370172');
   });
