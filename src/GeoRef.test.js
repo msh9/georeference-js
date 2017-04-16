@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import * as quads from './GeoRefPrecision';
-import { georefFromLatLng, latLngFromgeoref } from './GeoRef';
+import { georefFromLatLng, latLngFromGeoref } from './GeoRef';
 
 describe('Convert to georef from latitude and longitude', () => {
   test('rejects precision less than 2', () => {
@@ -47,7 +47,7 @@ describe('Convert to georef from latitude and longitude', () => {
 
   test('correctly converts the eight character precision GEOREF of the Naval Air Station Patuxent' +
     ' River', () => {
-    expect(georefFromLatLng(38.286108, -76.4291704, false, quads.OneArcMinuteQuad)).toBe('GJPJ3717');
+    expect(georefFromLatLng(38.286108, -76.4291704, false, quads.OneArcMinuteQuad)).toBe('GJPJ3417');
   });
 
   test('correctly converts the ten character position of the Naval Air Station Patuxent River', () => {
@@ -67,35 +67,35 @@ describe('Convert to georef from latitude and longitude', () => {
 describe('Convert to latitude and longitude from georef', () => {
   test('rejects empty strings', () => {
     expect(() => {
-      latLngFromgeoref('');
+      latLngFromGeoref('');
     }).toThrow();
   });
 
   test('rejects leading invalid characters', () => {
     expect(() => {
-      latLngFromgeoref('0A');
+      latLngFromGeoref('0A');
     }).toThrow();
   });
 
   test('rejects invalid length of string', () => {
     expect(() => {
-      latLngFromgeoref('AAAA01');
+      latLngFromGeoref('AAAA01');
     }).toThrow();
   });
 
   test('correctly averages position of MKPG1204', () => {
-    expect(latLngFromgeoref('MKPG1204')).toMatchObject({ latitude: 51.08, longitude: -1.79});
+    expect(latLngFromGeoref('MKPG1204')).toMatchObject({ latitude: 51.08, longitude: -1.79});
   });
 
   test('correctly averages position of GJPJ34251717', () => {
-    expect(latLngFromgeoref('GJPJ34251717')).toMatachObject({ latitude: 0, longitude: 0});
+    expect(latLngFromGeoref('GJPJ34251717')).toMatchObject({ latitude: 0, longitude: 0});
   });
 
   test('correctly averages position of AA', () => {
-    expect(latLngFromgeoref('AA')).toMatachObject({ latitude: -82.5, longitude: -172.5});
+    expect(latLngFromGeoref('AA')).toMatchObject({ latitude: -82.5, longitude: -172.5});
   });
 
   test('correctly averages position of ZZ', () => {
-    expect(latLngFromgeoref('ZZ')).toMatachObject({ latitude: 82.5, longitude: 172.5});
+    expect(latLngFromGeoref('ZZ')).toMatchObject({ latitude: 82.5, longitude: 172.5});
   });
 });
