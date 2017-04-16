@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import * as quads from './GeoRefPrecision';
+import { round10 } from './DecimalRounding';
 
 /**
  * Small utility functions that implement the World Geographic Reference System (GEOREF). GEOREF
@@ -229,8 +230,8 @@ function getLatLngFromGeoref(georef, isSmallestQuad = false) {
         longitude: startingLongitude + (boundCheckAndRetrieve(georef[0]) * firstQuadWidth),
       };
       if (isSmallestQuad) {
-        point.latitude += firstQuadWidth / 2;
-        point.longitude += firstQuadWidth / 2;
+        point.latitude = Math.trunc((firstQuadWidth / 2) + point.latitude);
+        point.longitude = Math.trunc((firstQuadWidth / 2) + point.longitude);
       }
       return point;
     }
@@ -240,6 +241,10 @@ function getLatLngFromGeoref(georef, isSmallestQuad = false) {
       const northing = Number.parseInt(georef.substr(-1, 2), 10);
       point.latitude += (northing + isSmallestQuad ? 0.5 : 0) / degreeArcMinutes;
       point.longitude += (easting + isSmallestQuad ? 0.5 : 0) / degreeArcMinutes;
+      if (isSmallestQuad) {
+        point.latitude = round10(point.latitude, -1);
+        point.latitude = round10(point.latitude, -1);
+      }
       return point;
     }
     case quads.OneDegreeQuad: {
@@ -258,6 +263,10 @@ function getLatLngFromGeoref(georef, isSmallestQuad = false) {
       const northing = Number.parseInt(georef.substr(-3, 4), 10);
       point.latitude += (northing + isSmallestQuad ? 0.005 : 0) / hundrethDegreeArcMinutes;
       point.longitude += (easting + isSmallestQuad ? 0.005 : 0) / hundrethDegreeArcMinutes;
+      if (isSmallestQuad) {
+        point.latitude = round10(point.latitude, -3);
+        point.longitude = round10(point.longitude, -3);
+      }
       return point;
     }
     case quads.OneTenthArcMinuteQuad: {
@@ -266,6 +275,10 @@ function getLatLngFromGeoref(georef, isSmallestQuad = false) {
       const northing = Number.parseInt(georef.substr(-2, 3), 10);
       point.latitude += (northing + isSmallestQuad ? 0.05 : 0) / tenthDegreeArcMinutes;
       point.longitude += (easting + isSmallestQuad ? 0.05 : 0) / tenthDegreeArcMinutes;
+      if (isSmallestQuad) {
+        point.latitude = round10(point.latitude, -2);
+        point.longitude = round10(point.longitude, -2);
+      }
       return point;
     }
     default: {
