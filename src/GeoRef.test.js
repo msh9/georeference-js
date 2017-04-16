@@ -100,18 +100,18 @@ describe('Convert to latitude and longitude from georef', () => {
   });
 
   test('correctly averages position of MKPG1204', () => {
-    expect(latLngFromGeoref('MKPG1204')).toMatchObject({ latitude: 51.08, longitude: -1.79});
+    expect(latLngFromGeoref('MKPG1204')).toMatchObject({ latitude: 51.1, longitude: -1.8});
   });
 
   test('correctly averages position of GJPJ34251717', () => {
-    expect(latLngFromGeoref('GJPJ34251717')).toMatchObject({ latitude: 0, longitude: 0});
+    expect(latLngFromGeoref('GJPJ34251717')).toMatchObject({ latitude: 38.286, longitude: -79.429});
   });
 
   test('correctly averages position of AA', () => {
     expect(latLngFromGeoref('AA')).toMatchObject({ latitude: -82.5, longitude: -172.5});
   });
 
-  test('correctly averages position of ZZ', () => {
-    expect(latLngFromGeoref('ZZ')).toMatchObject({ latitude: 82.5, longitude: 172.5});
+  test('correctly averages position of ZM', () => {
+    expect(latLngFromGeoref('ZM')).toMatchObject({ latitude: 82.5, longitude: 172.5});
   });
 });

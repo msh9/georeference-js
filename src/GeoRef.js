@@ -93,6 +93,8 @@ const startingLongitude = -180;
 const startingLatitude = -90;
 const firstQuadWidth = 15;
 const degreeArcMinutes = 60;
+const tenthDegreeArcMinutes = degreeArcMinutes * 10;
+const hundrethDegreeArcMinutes = degreeArcMinutes * 100;
 
 /**
  * Returns a GEOREF string based on the given WGS84 latitude, longitude, and precision
@@ -216,45 +218,54 @@ export function latLngFromGeoref(georef) {
     throw new Error(`GEOREF georef of ${georef} is not an acceptable value from` +
       ' GeoRefPrecision');
   }
-  return _latLngFromGeoref(georef);
+  return getLatLngFromGeoref(georef, true);
 }
 
-function _latLngFromGeoref(georef) {
+function getLatLngFromGeoref(georef, isSmallestQuad = false) {
   switch (georef.length) {
     case quads.FifteenDegreeQuad: {
-      return {
+      const point = {
         latitude: startingLatitude + (boundCheckAndRetrieve(georef[1]) * firstQuadWidth),
         longitude: startingLongitude + (boundCheckAndRetrieve(georef[0]) * firstQuadWidth),
       };
+      if (isSmallestQuad) {
+        point.latitude += firstQuadWidth / 2;
+        point.longitude += firstQuadWidth / 2;
+      }
+      return point;
     }
     case quads.OneArcMinuteQuad: {
-      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const point = getLatLngFromGeoref(georef.substr(0, 4));
       const easting = Number.parseInt(georef.substr(-3, 2), 10);
       const northing = Number.parseInt(georef.substr(-1, 2), 10);
-      point.latitude += northing / 60;
-      point.longitude += easting / 60;
+      point.latitude += (northing + isSmallestQuad ? 0.5 : 0) / degreeArcMinutes;
+      point.longitude += (easting + isSmallestQuad ? 0.5 : 0) / degreeArcMinutes;
       return point;
     }
     case quads.OneDegreeQuad: {
-      const point = _latLngFromGeoref(georef.substr(0, 2));
+      const point = getLatLngFromGeoref(georef.substr(0, 2));
       point.latitude += boundCheckAndRetrieve(georef[3]);
       point.longitude += boundCheckAndRetrieve(georef[2]);
+      if (isSmallestQuad) {
+        point.latitude += 0.5;
+        point.longitude += 0.5;
+      }
       return point;
     }
     case quads.OneHundrethArcMinuteQuad: {
-      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const point = getLatLngFromGeoref(georef.substr(0, 4));
       const easting = Number.parseInt(georef.substr(-7, 4), 10);
       const northing = Number.parseInt(georef.substr(-3, 4), 10);
-      point.latitude += northing / 6000;
-      point.longitude += easting / 6000;
+      point.latitude += (northing + isSmallestQuad ? 0.005 : 0) / hundrethDegreeArcMinutes;
+      point.longitude += (easting + isSmallestQuad ? 0.005 : 0) / hundrethDegreeArcMinutes;
       return point;
     }
     case quads.OneTenthArcMinuteQuad: {
-      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const point = getLatLngFromGeoref(georef.substr(0, 4));
       const easting = Number.parseInt(georef.substr(-4, 3), 10);
       const northing = Number.parseInt(georef.substr(-2, 3), 10);
-      point.latitude += northing / 600;
-      point.longitude += easting / 600;
+      point.latitude += (northing + isSmallestQuad ? 0.05 : 0) / tenthDegreeArcMinutes;
+      point.longitude += (easting + isSmallestQuad ? 0.05 : 0) / tenthDegreeArcMinutes;
       return point;
     }
     default: {
