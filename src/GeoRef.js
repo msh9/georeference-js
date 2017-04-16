@@ -2,10 +2,11 @@ import * as quads from './GeoRefPrecision';
 
 /**
  * Small utility functions that implement the World Geographic Reference System (GEOREF). GEOREF
- * was developed by United State Govt. for defence and strategic air operations. Conveniently, is
- * it also a useful way of describing the general location of something. The system, as described,
- * supports arbitrary precision by subdivision of areas. This module supports precision to 0.01
- * minutes by use of 12 character GEOREF strings.
+ * was developed by the United State Govt. for defense and strategic air operations.
+ * Conveniently, is
+ * it also a useful way of describing the general location of something. This module supports
+ * precision to 0.01
+ * arc minutes by use of 12 character GEOREF strings.
  *
  * @see {@link http://earth-info.nga.mil/GandG/publications/tm8358.1/tr83581c.html#ZZ38|Here} for
   * more information.
@@ -41,12 +42,41 @@ const cleanedAlphabet = [
   'Z',
 ];
 
+/*
+ Just like we did for the geohash module, we include a fixed reverse look up map in ensure
+ that we're not iterating the cleanAlphabet array many, many, times.
+ */
+const georefCharMap = {
+  A: 0,
+  B: 1,
+  C: 2,
+  D: 3,
+  E: 4,
+  F: 5,
+  G: 6,
+  H: 7,
+  J: 8,
+  K: 9,
+  L: 10,
+  M: 11,
+  N: 12,
+  P: 13,
+  Q: 14,
+  R: 15,
+  S: 16,
+  T: 17,
+  U: 18,
+  V: 19,
+  W: 20,
+  X: 21,
+  Y: 22,
+  Z: 23,
+};
+
 const startingLongitude = -180;
 const startingLatitude = -90;
 const firstQuadWidth = 15;
-const degreeArcSeconds = 3600;
 const degreeArcMinutes = 60;
-const degreeArcSecondsPerMinutes = 60;
 
 /**
  * Returns a GEOREF string based on the given WGS84 latitude, longitude, and precision
@@ -138,9 +168,17 @@ export function georefFromLatLng(latitude, longitude, spaced = true, precision =
 
 function boundCheckAndAdd(quadId, characters) {
   if (quadId >= cleanedAlphabet.length) {
-    throw new Error(`Lat or Long value: ${quadId} was out of range`);
+    throw new Error(`Latitude or Longitude value: ${quadId} was out of range`);
   }
   characters.push(cleanedAlphabet[quadId]);
+}
+
+function boundCheckAndRetrieve(character) {
+  if (georefCharMap[character] === undefined) {
+    throw new Error(`Invalid character ${character} used in GEOREF string`);
+  }
+
+  return georefCharMap[character];
 }
 
 /**
@@ -150,8 +188,61 @@ function boundCheckAndAdd(quadId, characters) {
  * @returns {object} A latitude, longitude point that represents the average location of the
  * given GEOREF string
  */
-export function latLngFromgeoref(georef) {
+export function latLngFromGeoref(georef) {
   if (!georef) {
     throw new Error('Empty GEOREF strings are invalid');
+  } else if (georef.length < 2 || georef.length > 12) {
+    throw new Error(`GEOREF of ${georef.length} is out of bounds`);
+  } else if (georef.length !== quads.FifteenDegreeQuad &&
+    georef.length !== quads.OneArcMinuteQuad && georef.length !== quads.OneDegreeQuad &&
+    georef.length !== quads.OneHundrethArcMinuteQuad &&
+    georef.length !== quads.OneTenthArcMinuteQuad) {
+    throw new Error(`GEOREF georef of ${georef} is not an acceptable value from` +
+      ' GeoRefPrecision');
+  }
+  return _latLngFromGeoref(georef);
+}
+
+function _latLngFromGeoref(georef) {
+  switch (georef.length) {
+    case quads.FifteenDegreeQuad: {
+      return {
+        latitude: startingLatitude + (boundCheckAndRetrieve(georef[1]) * firstQuadWidth),
+        longitude: startingLongitude + (boundCheckAndRetrieve(georef[0]) * firstQuadWidth),
+      };
+    }
+    case quads.OneArcMinuteQuad: {
+      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const easting = Number.parseInt(georef.substr(-3, 2), 10);
+      const northing = Number.parseInt(georef.substr(-1, 2), 10);
+      point.latitude += northing / 60;
+      point.longitude += easting / 60;
+      return point;
+    }
+    case quads.OneDegreeQuad: {
+      const point = _latLngFromGeoref(georef.substr(0, 2));
+      point.latitude += boundCheckAndRetrieve(georef[3]);
+      point.longitude += boundCheckAndRetrieve(georef[2]);
+      return point;
+    }
+    case quads.OneHundrethArcMinuteQuad: {
+      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const easting = Number.parseInt(georef.substr(-7, 4), 10);
+      const northing = Number.parseInt(georef.substr(-3, 4), 10);
+      point.latitude += northing / 6000;
+      point.longitude += easting / 6000;
+      return point;
+    }
+    case quads.OneTenthArcMinuteQuad: {
+      const point = _latLngFromGeoref(georef.substr(0, 4));
+      const easting = Number.parseInt(georef.substr(-4, 3), 10);
+      const northing = Number.parseInt(georef.substr(-2, 3), 10);
+      point.latitude += northing / 600;
+      point.longitude += easting / 600;
+      return point;
+    }
+    default: {
+      throw new Error(`Unrecognized GEOREF length ${georef.length}`);
+    }
   }
 }
