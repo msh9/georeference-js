@@ -108,10 +108,10 @@ describe('Convert to latitude and longitude from georef', () => {
   });
 
   test('correctly averages position of AA', () => {
-    expect(latLngFromGeoref('AA')).toMatchObject({ latitude: -82.5, longitude: -172.5});
+    expect(latLngFromGeoref('AA')).toMatchObject({ latitude: -82, longitude: -172});
   });
 
   test('correctly averages position of ZM', () => {
-    expect(latLngFromGeoref('ZM')).toMatchObject({ latitude: 82.5, longitude: 172.5});
+    expect(latLngFromGeoref('ZM')).toMatchObject({ latitude: 82, longitude: 172});
   });
 });
