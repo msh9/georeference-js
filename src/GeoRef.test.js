@@ -108,7 +108,7 @@ describe('Convert to latitude and longitude from georef', () => {
   });
 
   test('correctly averages position of GPPJ', () => {
-    expect(latLngFromGeoref('GJPJ')).toMatchObject({ latitude: 39, longitude: -76});
+    expect(latLngFromGeoref('GJPJ')).toMatchObject({ latitude: 39, longitude: -76 });
   });
 
   test('correctly averages position of AA', () => {
