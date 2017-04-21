@@ -29,5 +29,9 @@ describe('Round to a specific decimal place', () => {
     test('positive hundreth position rounding', () => {
       expect(rounding.round10(234.235, -2)).toBe(234.24);
     });
+
+    test('positive thousandth position rounding', () => {
+       expect(rounding.round10(234.2367, -3)).toBe(234.237);
+    });
   });
 });
