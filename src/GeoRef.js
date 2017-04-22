@@ -63,32 +63,11 @@ const cleanedAlphabet = [
  Just like we did for the geohash module, we include a fixed reverse look up map in ensure
  that we're not iterating the cleanAlphabet array many, many, times.
  */
-const georefCharMap = {
-  A: 0,
-  B: 1,
-  C: 2,
-  D: 3,
-  E: 4,
-  F: 5,
-  G: 6,
-  H: 7,
-  J: 8,
-  K: 9,
-  L: 10,
-  M: 11,
-  N: 12,
-  P: 13,
-  Q: 14,
-  R: 15,
-  S: 16,
-  T: 17,
-  U: 18,
-  V: 19,
-  W: 20,
-  X: 21,
-  Y: 22,
-  Z: 23,
-};
+const georefCharMap = cleanedAlphabet.reduce((accumulator, val, idx) => {
+  /* eslint no-param-reassign: 0 */
+  accumulator[val] = idx;
+  return accumulator;
+},{});
 
 const startingLongitude = -180;
 const startingLatitude = -90;

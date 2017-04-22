@@ -65,40 +65,11 @@ I will admit, this looks really stupid, but it does save us from
 executing #indexOf or similar many times against geohashBase32Indices
 when converting from a geohash.
  */
-const geohashBase32CharMap = {
-  0: 0,
-  1: 1,
-  2: 2,
-  3: 3,
-  4: 4,
-  5: 5,
-  6: 6,
-  7: 7,
-  8: 8,
-  9: 9,
-  b: 10,
-  c: 11,
-  d: 12,
-  e: 13,
-  f: 14,
-  g: 15,
-  h: 16,
-  j: 17,
-  k: 18,
-  m: 19,
-  n: 20,
-  p: 21,
-  q: 22,
-  r: 23,
-  s: 24,
-  t: 25,
-  u: 26,
-  v: 27,
-  w: 28,
-  x: 29,
-  y: 30,
-  z: 31,
-};
+const geohashBase32CharMap = geohashBase32Indices.reduce((accumulator, val, idx) => {
+  /* eslint no-param-reassign: 0 */
+  accumulator[val] = idx;
+  return accumulator;
+}, {});
 
 const maxLatitudeBound = 90;
 const maxLongitudeBound = 180;

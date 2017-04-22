@@ -55,6 +55,13 @@ const alphabet = [
   'x'
 ];
 
+const charMap = alphabet.reduce((accumulator, val, idx) => {
+  /* eslint no-param-reassign: 0 */
+  accumulator[idx] = val;
+  return accumulator;
+},{});
+
+
 /**
  * Converts to a Maidenhead Locator Square from a WGS84 decimal latitude, longitude pair
  * @param {number} latitude A WGS84 decimal latitude
