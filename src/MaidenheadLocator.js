@@ -14,6 +14,8 @@
  limitations under the License.
  */
 
+import { boundCheckAndAdd, boundCheckAndRetrieve } from './Common';
+
 /**
  * Implements functions for converting to/from a Maidenhead Locator using WGS84 latitude and longitude
  * coordinates.
@@ -69,7 +71,12 @@ const charMap = alphabet.reduce((accumulator, val, idx) => {
  * @return {string} A Maidenhead Locator Square
  */
 export function mhLocatorFromLatLng(latitude, longitude) {
+  const characters = [];
 
+  // First level calculations
+
+  boundCheckAndAdd(Math.floor(longitude / firstLevelDivisions), characters, alphabet);
+  boundCheckAndAdd(Math.floor(latitude / firstLevelDivisions), characters, alphabet);
 }
 
 /**
