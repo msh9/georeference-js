@@ -27,7 +27,7 @@ import { boundCheckAndAdd, boundCheckAndRetrieve } from './Common';
 const firstLevelDivisions = 18;
 const secondLevelDivisions = 10;
 const thirdLevelDivisions =  24;
-const stargingLongitude = -180;
+const startingLongitude = -180;
 const startingLatitude = -90;
 
 const alphabet = [
@@ -74,9 +74,17 @@ export function mhLocatorFromLatLng(latitude, longitude) {
   const characters = [];
 
   // First level calculations
+  boundCheckAndAdd(Math.floor(
+    (longitude - startingLongitude) / 20), characters, alphabet);
+  boundCheckAndAdd(Math.floor(
+    (latitude - startingLatitude) / 10), characters, alphabet);
+  // Only the top level square characters are upper case
+  characters[0] = characters[0].toUpperCase();
+  characters[1] = characters[1].toUpperCase();
+  // End first level calculations
 
-  boundCheckAndAdd(Math.floor(longitude / firstLevelDivisions), characters, alphabet);
-  boundCheckAndAdd(Math.floor(latitude / firstLevelDivisions), characters, alphabet);
+
+  return characters.join('');
 }
 
 /**

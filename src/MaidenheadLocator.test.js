@@ -17,6 +17,10 @@
 import { mhLocatorFromLatLng, latLngFromMhLocator } from './MaidenheadLocator';
 
 describe('Convert from latitude and longitude to Maidenhead Locator Square', () => {
+  test('correctly handles top level location square of -90, 180', () => {
+    expect(mhLocatorFromLatLng(-90, -180)).toBe('AA');
+  });
+
   test('correctly handles top level locator square of 0, 0', () => {
     expect(mhLocatorFromLatLng(0, 0)).toBe('JJ');
   });
@@ -26,7 +30,7 @@ describe('Convert from latitude and longitude to Maidenhead Locator Square', () 
   });
 
   test('correctly handles the extended square of Paris, France', () => {
-    //TODO: Calculate extended square and add to test
+    // TODO: Calculate extended square and add to test
     expect(mhLocatorFromLatLng(48.85207, 2.3909)).toBe('JN18EU');
   });
 });
