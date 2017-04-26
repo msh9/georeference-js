@@ -25,7 +25,9 @@ import { boundCheckAndAdd, boundCheckAndRetrieve } from './Common';
  */
 
 const firstLevelDivisions = 18;
-const secondLevelDivisions = 10;
+const firstLevelLongitudeDivision = 360 / firstLevelDivisions;
+const firstLevelLatitudeDivision = 180 / firstLevelDivisions;
+const secondLevelLongitudeDivisions = 2;
 const thirdLevelDivisions =  24;
 const startingLongitude = -180;
 const startingLatitude = -90;
@@ -74,14 +76,30 @@ export function mhLocatorFromLatLng(latitude, longitude) {
   const characters = [];
 
   // First level calculations
-  boundCheckAndAdd(Math.floor(
-    (longitude - startingLongitude) / 20), characters, alphabet);
-  boundCheckAndAdd(Math.floor(
-    (latitude - startingLatitude) / 10), characters, alphabet);
+  let westLongitudeBoxBoundary = Math.floor(
+    (longitude - startingLongitude) / firstLevelLongitudeDivision);
+  boundCheckAndAdd(westLongitudeBoxBoundary, characters, alphabet);
+  let southLatitudeBoxBoundary = Math.floor(
+    (latitude - startingLatitude) / firstLevelLatitudeDivision);
+  boundCheckAndAdd(southLatitudeBoxBoundary, characters, alphabet);
   // Only the top level square characters are upper case
   characters[0] = characters[0].toUpperCase();
   characters[1] = characters[1].toUpperCase();
   // End first level calculations
+
+  // Second level, 'square', calculations
+  westLongitudeBoxBoundary = Math.floor((longitude % firstLevelLongitudeDivision) / 2);
+  southLatitudeBoxBoundary = Math.floor(latitude % firstLevelLatitudeDivision);
+  characters.push(westLongitudeBoxBoundary.toString());
+  characters.push(southLatitudeBoxBoundary.toString());
+  // End second level calculations
+
+  // Third level, 'subsquares', calculations
+  westLongitudeBoxBoundary = Math.floor((longitude % 2) * (120 / 24));
+  southLatitudeBoxBoundary = Math.floor((latitude % 1) * (60 / 24));
+  boundCheckAndAdd(westLongitudeBoxBoundary, characters, alphabet);
+  boundCheckAndAdd(southLatitudeBoxBoundary, characters, alphabet);
+
 
 
   return characters.join('');
