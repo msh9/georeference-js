@@ -28,7 +28,10 @@ const firstLevelDivisions = 18;
 const firstLevelLongitudeDivision = 360 / firstLevelDivisions;
 const firstLevelLatitudeDivision = 180 / firstLevelDivisions;
 const secondLevelLongitudeDivisions = 2;
-const thirdLevelDivisions =  24;
+const thirdLevelDivisions = 24;
+const degreeArcMinutes = 60;
+const thirdLevelLongitudeDivisions = (2 * degreeArcMinutes) / thirdLevelDivisions;
+const thirdLevelLatitudeDivisions = degreeArcMinutes / thirdLevelDivisions;
 const startingLongitude = -180;
 const startingLatitude = -90;
 
@@ -75,12 +78,14 @@ const charMap = alphabet.reduce((accumulator, val, idx) => {
 export function mhLocatorFromLatLng(latitude, longitude) {
   const characters = [];
 
+  // In maidenhead locators are calculated as easting and northing from -90 S and -180 W
+  const easting = longitude - startingLongitude;
+  const northing = latitude - startingLatitude;
+
   // First level calculations
-  let westLongitudeBoxBoundary = Math.floor(
-    (longitude - startingLongitude) / firstLevelLongitudeDivision);
+  let westLongitudeBoxBoundary = Math.floor(easting / firstLevelLongitudeDivision);
   boundCheckAndAdd(westLongitudeBoxBoundary, characters, alphabet);
-  let southLatitudeBoxBoundary = Math.floor(
-    (latitude - startingLatitude) / firstLevelLatitudeDivision);
+  let southLatitudeBoxBoundary = Math.floor(northing / firstLevelLatitudeDivision);
   boundCheckAndAdd(southLatitudeBoxBoundary, characters, alphabet);
   // Only the top level square characters are upper case
   characters[0] = characters[0].toUpperCase();
@@ -88,18 +93,19 @@ export function mhLocatorFromLatLng(latitude, longitude) {
   // End first level calculations
 
   // Second level, 'square', calculations
-  westLongitudeBoxBoundary = Math.floor((longitude % firstLevelLongitudeDivision) / 2);
-  southLatitudeBoxBoundary = Math.floor(latitude % firstLevelLatitudeDivision);
+  westLongitudeBoxBoundary = Math.floor((easting % firstLevelLongitudeDivision) / 2);
+  southLatitudeBoxBoundary = Math.floor(northing % firstLevelLatitudeDivision);
   characters.push(westLongitudeBoxBoundary.toString());
   characters.push(southLatitudeBoxBoundary.toString());
   // End second level calculations
 
   // Third level, 'subsquares', calculations
-  westLongitudeBoxBoundary = Math.floor((longitude % 2) * (120 / 24));
-  southLatitudeBoxBoundary = Math.floor((latitude % 1) * (60 / 24));
+  westLongitudeBoxBoundary =
+    Math.floor(((easting % 2) * degreeArcMinutes) / thirdLevelLongitudeDivisions);
+  southLatitudeBoxBoundary =
+    Math.floor(((northing % 1) * degreeArcMinutes) / thirdLevelLatitudeDivisions);
   boundCheckAndAdd(westLongitudeBoxBoundary, characters, alphabet);
   boundCheckAndAdd(southLatitudeBoxBoundary, characters, alphabet);
-
 
 
   return characters.join('');

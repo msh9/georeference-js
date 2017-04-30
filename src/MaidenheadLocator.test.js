@@ -18,33 +18,32 @@ import { mhLocatorFromLatLng, latLngFromMhLocator } from './MaidenheadLocator';
 
 describe('Convert from latitude and longitude to Maidenhead Locator Square', () => {
   test('correctly handles top level location square of -90, 180', () => {
-    expect(mhLocatorFromLatLng(-90, -180)).toBe('AA');
+    expect(mhLocatorFromLatLng(-90, -180)).toMatch(/^AA/);
   });
 
   test('correctly handles top level locator square of 0, 0', () => {
-    expect(mhLocatorFromLatLng(0, 0)).toBe('JJ');
+    expect(mhLocatorFromLatLng(0, 0)).toMatch(/^JJ/);
   });
 
-  test('correctly handles top level locator square of Newington Connecticut to 4 characters', () => {
+  test('correctly handles subsquare of Newington Connecticut', () => {
     expect(mhLocatorFromLatLng(41.71463, -72.72713)).toBe('FN31pr');
   });
 
-  test('correctly handles the extended square of Paris, France', () => {
-    // TODO: Calculate extended square and add to test
-    expect(mhLocatorFromLatLng(48.85207, 2.3909)).toBe('JN18EU');
+  test('correctly handles the subsquare of Paris, France', () => {
+    expect(mhLocatorFromLatLng(48.85207, 2.3909)).toBe('JN18eu');
   });
 });
 
 describe('Convert from Maidenhead Locator Square to averaged latitude longitude', () => {
   test('correctly averages location of AA', () => {
-
+    expect(latLngFromMhLocator('AA')).toMatchObject({ latitude: -85, longitude: -170 });
   });
 
-  test('correctly averages location of XX', () => {
-
+  test('correctly averages location of RR', () => {
+    expect(latLngFromMhLocator('RR')).toMatchObject({ latitude: 85, longitude: 170 });
   });
 
   test('correctly averages location of FN31pr', () => {
-
+    expect(latLngFromMhLocator('FN31pr')).toMatchObject({ latitude: 41.7, longitude: -72.7 });
   });
 });
