@@ -169,9 +169,9 @@ function getLatLngFromMhLocator(locatorChars, last = false) {
       const point = getLatLngFromMhLocator(locatorChars.slice(0, 4));
       const LngIdx = boundCheckAndRetrieve(locatorChars[4].toLowerCase(), charMap);
       const LatIdx = boundCheckAndRetrieve(locatorChars[5].toLowerCase(), charMap);
-      point.longitude += ((LngIdx * thirdLevelLongitudeDivisions) + last ? 2.5 : 0)
+      point.longitude += ((LngIdx * thirdLevelLongitudeDivisions) + (last ? 2.5 : 0))
         / degreeArcMinutes;
-      point.latitude += ((LatIdx * thirdLevelLatitudeDivisions) + last ? 1.25 : 0)
+      point.latitude += ((LatIdx * thirdLevelLatitudeDivisions) + (last ? 1.25 : 0))
         / degreeArcMinutes;
       if (last) {
         point.longitude = round10(point.longitude, -1);
