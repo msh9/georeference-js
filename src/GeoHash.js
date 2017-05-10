@@ -24,7 +24,7 @@
  *
  * @module
  */
-
+export const name = 'GeoHash';
 const geohashBase32Indices = [
   '0',
   '1',

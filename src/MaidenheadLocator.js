@@ -26,6 +26,7 @@ import { round10 } from './DecimalRounding';
  * Original description of system by @see {@link http://www.arrl.org/grid-squares|ARRL}
  * @module
  */
+export const name = 'Maidenhead';
 
 const firstLevelDivisions = 18;
 const firstLevelLongitudeDivision = 360 / firstLevelDivisions;

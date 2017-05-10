@@ -17,3 +17,23 @@ limitations under the License.
 ## Description
 
 JavaScript library implementing functions for a few different georeference systems
+
+## Commands
+
+Runs with npm, but yarn is preferred and a lock file is provided.
+
+- `yarn run lint` Runs the eslint runs against the project, these are AirBnB's style guide with a couple minor tweaks
+- `yarn run test` Runs the jest based tests against the library
+- `yarn run dist` Runs the browserify/babelify build
+- `yarn run build` Runs lint, test, and the browserify/babelify build in order to generate a script file usable by a browser
+
+## Files
+
+### `dist/`
+
+`dist/` contains the browserified distributed of the library.
+
+### `index.js` and `src`
+
+Contain the es2015 source using es2015 modules. Note, this means that even for node this code might
+have to be run through babel. This is not currently implemented.

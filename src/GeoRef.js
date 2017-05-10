@@ -30,6 +30,7 @@ import { round10 } from './DecimalRounding';
  *
  * @module
  */
+export const name = 'GeoRef';
 
 // I and O are removed for clarity
 const cleanedAlphabet = [
