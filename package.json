@@ -1,6 +1,6 @@
 {
   "name": "georeference-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript library implementing utility functions for some georeference systems",
   "main": "index.js",
   "repository": "git@github.com:msh9/georeference-js.git",
